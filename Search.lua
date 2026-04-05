@@ -2081,14 +2081,14 @@ local function GetSearchDifficultyToken(activityInfo)
 end
 
 local function ParsePlaystyleText(resultInfo)
-    local haystack = strlower((resultInfo and resultInfo.name or "") .. " " .. (resultInfo and resultInfo.comment or ""))
-    if haystack:find("carry", 1, true) or haystack:find("boost", 1, true) then
-        return "Carry Offered"
-    elseif haystack:find("learn", 1, true) then
+    local haystack = strlower((resultInfo and resultInfo.generalPlaystyle or ""))
+    if haystack:find("0", 1, true) then
+        return nil
+    elseif haystack:find("1", 1, true) then
         return "Learning"
-    elseif haystack:find("relax", 1, true) or haystack:find("chill", 1, true) then
+    elseif haystack:find("2", 1, true) then
         return "Relaxed"
-    elseif haystack:find("comp", 1, true) or haystack:find("push", 1, true) then
+    elseif haystack:find("3", 1, true) or haystack:find("4", 1, true) then
         return "Competitive"
     end
 
