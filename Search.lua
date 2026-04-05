@@ -385,28 +385,13 @@ local filterActivityTitle
 local keyRangeLabel
 local keyRangeHint
 local keyQueryBox
-local boxNeedTank
-local boxHasTank
-local boxNeedHeal
-local boxHasHeal
-local boxNeedDPS
-local boxParty
-local boxLust
-local boxBrez
+local filterBoxes = {}
 local divTexture
 local filterDungeonContainer
 local nativeDungeonFilterScroll
 local nativeDungeonFilterContent
 local nativeDungeonActivityButtons = {}
-local nativeNeedsTankBox
-local nativeNeedsHealBox
-local nativeNeedsDpsBox
-local nativeNeedsMyClassBox
-local nativeHasTankBox
-local nativeHasHealBox
-local nativePartyBox
-local nativeLustBox
-local nativeBrezBox
+local nativeFilterBoxes = {}
 local nativeMinimumRatingLabel
 local nativeMinimumRatingBox
 local nativeActivityLabel
@@ -1046,29 +1031,29 @@ local startY = -148
 local col1X = 16
 local col2X = 110
 
-boxNeedTank = CreateOakToggleBox(filterPanel, L["Need Tank"], "NeedTank", true)
-boxNeedTank:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY)
+filterBoxes.needTank = CreateOakToggleBox(filterPanel, L["Need Tank"], "NeedTank", true)
+filterBoxes.needTank:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY)
 
-boxHasTank = CreateOakToggleBox(filterPanel, L["Has Tank"], "HasTank", false)
-boxHasTank:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY)
+filterBoxes.hasTank = CreateOakToggleBox(filterPanel, L["Has Tank"], "HasTank", false)
+filterBoxes.hasTank:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY)
 
-boxNeedHeal = CreateOakToggleBox(filterPanel, L["Need Heals"], "NeedHeal", true)
-boxNeedHeal:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 22)
+filterBoxes.needHeal = CreateOakToggleBox(filterPanel, L["Need Heals"], "NeedHeal", true)
+filterBoxes.needHeal:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 22)
 
-boxHasHeal = CreateOakToggleBox(filterPanel, L["Has Heals"], "HasHeal", false)
-boxHasHeal:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY - 22)
+filterBoxes.hasHeal = CreateOakToggleBox(filterPanel, L["Has Heals"], "HasHeal", false)
+filterBoxes.hasHeal:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY - 22)
 
-boxNeedDPS = CreateOakToggleBox(filterPanel, L["Need DPS"], "NeedDPS", true)
-boxNeedDPS:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 44)
+filterBoxes.needDPS = CreateOakToggleBox(filterPanel, L["Need DPS"], "NeedDPS", true)
+filterBoxes.needDPS:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 44)
 
-boxParty = CreateOakToggleBox(filterPanel, L["Party Fit"], "PartyFit", false)
-boxParty:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY - 44)
+filterBoxes.party = CreateOakToggleBox(filterPanel, L["Party Fit"], "PartyFit", false)
+filterBoxes.party:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY - 44)
 
-boxLust = CreateOakToggleBox(filterPanel, L["Need Lust"], "NeedLust", false)
-boxLust:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 66)
+filterBoxes.lust = CreateOakToggleBox(filterPanel, L["Need Lust"], "NeedLust", false)
+filterBoxes.lust:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 66)
 
-boxBrez = CreateOakToggleBox(filterPanel, L["Need BRez"], "NeedBrez", false)
-boxBrez:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY - 66)
+filterBoxes.brez = CreateOakToggleBox(filterPanel, L["Need BRez"], "NeedBrez", false)
+filterBoxes.brez:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY - 66)
 
 filterPanel.matchMyRaidLockoutBox = CreateOakToggleBox(filterPanel, L["Match My Lockout"], "MatchMyRaidLockout", false)
 filterPanel.matchMyRaidLockoutBox:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 88)
@@ -1400,52 +1385,55 @@ local SEARCH_ROLE_SQUARE_SPACING = 1
 local SEARCH_NOTES_RIGHT_MARGIN = 41
 local SEARCH_REGION_WIDTH = 42
 
-local SEARCH_LAYOUT_EXPANDED = {
-    dungeonX = 15, dungeonWidth = 145,
-    setupX = 165, setupWidth = 98,
-    titleX = 267, titleWidth = 98,
-    modeX = nil, modeWidth = 0,
-    ratingX = 370, ratingWidth = 65,
-    ageX = 440, ageWidth = 35,
-    notesX = 480, notesWidth = SEARCH_NOTE_FULL_WIDTH,
-    roleStartX = 177,
-    roleSummaryX = {175, 205, 235},
-}
-
-local SEARCH_LAYOUT_COLLAPSED = {
-    dungeonX = 15, dungeonWidth = 145,
-    setupX = 165, setupWidth = 98,
-    titleX = 267, titleWidth = 98,
-    modeX = nil, modeWidth = 0,
-    ratingX = 370, ratingWidth = 65,
-    ageX = 440, ageWidth = 35,
-    notesX = 482, notesWidth = SEARCH_NOTE_COLLAPSED_WIDTH,
-    roleStartX = 177,
-    roleSummaryX = {175, 205, 235},
-}
-
-local SEARCH_LAYOUT_EXPANDED_RAID = {
-    dungeonX = 15, dungeonWidth = 132,
-    modeX = 151, modeWidth = 56,
-    setupX = 211, setupWidth = 92,
-    titleX = 307, titleWidth = 86,
-    ratingX = 397, ratingWidth = 30,
-    ageX = 431, ageWidth = 35,
-    notesX = 471, notesWidth = SEARCH_NOTE_FULL_WIDTH,
-    roleStartX = 222,
-    roleSummaryX = {220, 248, 276},
-}
-
-local SEARCH_LAYOUT_COLLAPSED_RAID = {
-    dungeonX = 15, dungeonWidth = 132,
-    modeX = 151, modeWidth = 56,
-    setupX = 211, setupWidth = 92,
-    titleX = 307, titleWidth = 86,
-    ratingX = 397, ratingWidth = 30,
-    ageX = 431, ageWidth = 35,
-    notesX = 473, notesWidth = SEARCH_NOTE_COLLAPSED_WIDTH,
-    roleStartX = 222,
-    roleSummaryX = {220, 248, 276},
+local SEARCH_LAYOUTS = {
+    expanded = {
+        dungeonX = 15, dungeonWidth = 115,
+        playstyleX = 130, playstyleWidth = 60,
+        setupX = 190, setupWidth = 98,
+        titleX = 288, titleWidth = 98,
+        modeX = nil, modeWidth = 0,
+        ratingX = 386, ratingWidth = 65,
+        ageX = 451, ageWidth = 35,
+        notesX = 486, notesWidth = SEARCH_NOTE_FULL_WIDTH - 6,
+        roleStartX = 202,
+        roleSummaryX = {200, 230, 260},
+    },
+    collapsed = {
+        dungeonX = 15, dungeonWidth = 115,
+        playstyleX = 130, playstyleWidth = 60,
+        setupX = 190, setupWidth = 98,
+        titleX = 288, titleWidth = 98,
+        modeX = nil, modeWidth = 0,
+        ratingX = 386, ratingWidth = 65,
+        ageX = 451, ageWidth = 35,
+        notesX = 488, notesWidth = SEARCH_NOTE_COLLAPSED_WIDTH,
+        roleStartX = 202,
+        roleSummaryX = {200, 230, 260},
+    },
+    expanded_raid = {
+        dungeonX = 15, dungeonWidth = 100,
+        playstyleX = 115, playstyleWidth = 56,
+        modeX = 171, modeWidth = 56,
+        setupX = 227, setupWidth = 92,
+        titleX = 319, titleWidth = 86,
+        ratingX = 405, ratingWidth = 30,
+        ageX = 435, ageWidth = 35,
+        notesX = 470, notesWidth = SEARCH_NOTE_FULL_WIDTH - 8,
+        roleStartX = 238,
+        roleSummaryX = {236, 264, 292},
+    },
+    collapsed_raid = {
+        dungeonX = 15, dungeonWidth = 100,
+        playstyleX = 115, playstyleWidth = 56,
+        modeX = 171, modeWidth = 56,
+        setupX = 227, setupWidth = 92,
+        titleX = 319, titleWidth = 86,
+        ratingX = 405, ratingWidth = 30,
+        ageX = 435, ageWidth = 35,
+        notesX = 472, notesWidth = SEARCH_NOTE_COLLAPSED_WIDTH,
+        roleStartX = 238,
+        roleSummaryX = {236, 264, 292},
+    },
 }
 
 local function GetSearchRoleStartX(layout)
@@ -1500,16 +1488,9 @@ end
 
 local function GetSearchLayout()
     if SearchUsesRaidColumns() then
-        if OakLFGSorterDB and OakLFGSorterDB.searchHideNotes then
-            return SEARCH_LAYOUT_COLLAPSED_RAID
-        end
-        return SEARCH_LAYOUT_EXPANDED_RAID
+        return OakLFGSorterDB and OakLFGSorterDB.searchHideNotes and SEARCH_LAYOUTS.collapsed_raid or SEARCH_LAYOUTS.expanded_raid
     end
-
-    if OakLFGSorterDB and OakLFGSorterDB.searchHideNotes then
-        return SEARCH_LAYOUT_COLLAPSED
-    end
-    return SEARCH_LAYOUT_EXPANDED
+    return OakLFGSorterDB and OakLFGSorterDB.searchHideNotes and SEARCH_LAYOUTS.collapsed or SEARCH_LAYOUTS.expanded
 end
 
 local function GetPinnedRowPriority(group)
@@ -1559,6 +1540,8 @@ local function SortGroups(grpA, grpB, sortBy, isAscending)
         else
             valA, valB = grpA.dungeon, grpB.dungeon
         end
+    elseif sortBy == "playstyle" then
+        valA, valB = grpA.playstyleValue or 0, grpB.playstyleValue or 0
     elseif sortBy == "mode" then
         if grpA.mode == "raid" or grpA.mode == "legacy_raid" or grpB.mode == "raid" or grpB.mode == "legacy_raid" then
             valA, valB = GetRaidDifficultySortKey(grpA), GetRaidDifficultySortKey(grpB)
@@ -1585,6 +1568,7 @@ end
 
 local headers = {}
 local dungeonHeader
+local playstyleHeader
 local setupHeader
 local titleHeader
 local modeHeader
@@ -1682,17 +1666,18 @@ local function CreateHeader(label, sortKey, width, xOffset)
     return btn
 end
 
-dungeonHeader = CreateHeader(L["Dungeon"], "dungeon", SEARCH_LAYOUT_EXPANDED.dungeonWidth, SEARCH_LAYOUT_EXPANDED.dungeonX)
-setupHeader = CreateHeader(L["Comp"], "members", SEARCH_LAYOUT_EXPANDED.setupWidth, SEARCH_LAYOUT_EXPANDED.setupX)
-titleHeader = CreateHeader(L["Title"], "title", SEARCH_LAYOUT_EXPANDED.titleWidth, SEARCH_LAYOUT_EXPANDED.titleX)
-modeHeader = CreateHeader("Mode", "mode", 1, SEARCH_LAYOUT_EXPANDED.titleX + SEARCH_LAYOUT_EXPANDED.titleWidth + 4)
-ratingHeader = CreateHeader(L["Rating"], "rating", SEARCH_LAYOUT_EXPANDED.ratingWidth, SEARCH_LAYOUT_EXPANDED.ratingX)
-ageHeader = CreateHeader(L["Age"], "age", SEARCH_LAYOUT_EXPANDED.ageWidth, SEARCH_LAYOUT_EXPANDED.ageX)
+dungeonHeader = CreateHeader(L["Dungeon"], "dungeon", SEARCH_LAYOUTS.expanded.dungeonWidth, SEARCH_LAYOUTS.expanded.dungeonX)
+playstyleHeader = CreateHeader(L["Style"], "playstyle", SEARCH_LAYOUTS.expanded.playstyleWidth, SEARCH_LAYOUTS.expanded.playstyleX)
+setupHeader = CreateHeader(L["Comp"], "members", SEARCH_LAYOUTS.expanded.setupWidth, SEARCH_LAYOUTS.expanded.setupX)
+titleHeader = CreateHeader(L["Title"], "title", SEARCH_LAYOUTS.expanded.titleWidth, SEARCH_LAYOUTS.expanded.titleX)
+modeHeader = CreateHeader("Mode", "mode", 1, SEARCH_LAYOUTS.expanded.titleX + SEARCH_LAYOUTS.expanded.titleWidth + 4)
+ratingHeader = CreateHeader(L["Rating"], "rating", SEARCH_LAYOUTS.expanded.ratingWidth, SEARCH_LAYOUTS.expanded.ratingX)
+ageHeader = CreateHeader(L["Age"], "age", SEARCH_LAYOUTS.expanded.ageWidth, SEARCH_LAYOUTS.expanded.ageX)
 
 local notesToggleBtn = CreateFlatButton(OAK_SEARCH, L["Notes"], SEARCH_NOTE_FULL_WIDTH)
 notesToggleBtn:SetHeight(22)
-notesToggleBtn:SetPoint("TOPLEFT", OAK_SEARCH, "TOPLEFT", SEARCH_LAYOUT_EXPANDED.notesX, SEARCH_COLUMN_HEADER_Y)
-notesHeader = CreateHeader(L["Notes"], "note", SEARCH_NOTE_FULL_WIDTH - 24, SEARCH_LAYOUT_EXPANDED.notesX)
+notesToggleBtn:SetPoint("TOPLEFT", OAK_SEARCH, "TOPLEFT", SEARCH_LAYOUTS.expanded.notesX, SEARCH_COLUMN_HEADER_Y)
+notesHeader = CreateHeader(L["Notes"], "note", SEARCH_NOTE_FULL_WIDTH - 24, SEARCH_LAYOUTS.expanded.notesX)
 notesVisibilityBtn = CreateFlatButton(OAK_SEARCH, "-", 20)
 notesVisibilityBtn:SetHeight(22)
 notesToggleBtn:SetScript("OnEnter", function(self)
@@ -1729,6 +1714,10 @@ local function UpdateSearchHeaderVisuals()
     dungeonHeader:SetWidth(layout.dungeonWidth)
     dungeonHeader:ClearAllPoints()
     dungeonHeader:SetPoint("TOPLEFT", OAK_SEARCH, "TOPLEFT", layout.dungeonX, SEARCH_COLUMN_HEADER_Y)
+
+    playstyleHeader:SetWidth(layout.playstyleWidth)
+    playstyleHeader:ClearAllPoints()
+    playstyleHeader:SetPoint("TOPLEFT", OAK_SEARCH, "TOPLEFT", layout.playstyleX, SEARCH_COLUMN_HEADER_Y)
 
     setupHeader:SetWidth(layout.setupWidth)
     setupHeader:ClearAllPoints()
@@ -2189,6 +2178,8 @@ addonTable.GetSearchHeaderTooltipData = function(sortKey, mode)
             return "Activity", "Sort by activity or bracket."
         end
         return "Dungeon", "Sort by dungeon or activity name."
+    elseif sortKey == "playstyle" then
+        return "Style", "Sort by playstyle (Learning, Relaxed, Serious, Expert)."
     elseif sortKey == "members" then
         return "Comp", "Sort by party setup and group composition."
     elseif sortKey == "title" then
@@ -3334,14 +3325,14 @@ UpdateSearchFilterPane = function()
         addonTable.SearchQueryButton:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 15, searchButtonTopY)
         addonTable.SearchResetButton:SetPoint("TOPLEFT", addonTable.SearchQueryButton, "TOPRIGHT", 7, 0)
         addonTable.SearchResetButton:Show()
-        SetControlVisible(boxNeedTank, false)
-        SetControlVisible(boxNeedHeal, false)
-        SetControlVisible(boxNeedDPS, false)
-        SetControlVisible(boxHasTank, false)
-        SetControlVisible(boxHasHeal, false)
-        SetControlVisible(boxParty, false)
-        SetControlVisible(boxLust, false)
-        SetControlVisible(boxBrez, false)
+        SetControlVisible(filterBoxes.needTank, false)
+        SetControlVisible(filterBoxes.needHeal, false)
+        SetControlVisible(filterBoxes.needDPS, false)
+        SetControlVisible(filterBoxes.hasTank, false)
+        SetControlVisible(filterBoxes.hasHeal, false)
+        SetControlVisible(filterBoxes.party, false)
+        SetControlVisible(filterBoxes.lust, false)
+        SetControlVisible(filterBoxes.brez, false)
         SetControlVisible(filterPanel.matchMyRaidLockoutBox, false)
         SetControlVisible(divTexture, false)
         SetControlVisible(filterActivityTitle, false)
@@ -3380,23 +3371,23 @@ UpdateSearchFilterPane = function()
     addonTable.SearchQueryButton:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 15, searchButtonTopY)
     addonTable.SearchResetButton:Hide()
 
-    SetControlVisible(boxNeedTank, showRoleNeedToggles)
-    SetControlVisible(boxNeedHeal, showRoleNeedToggles)
-    SetControlVisible(boxNeedDPS, showRoleNeedToggles)
-    SetControlVisible(boxHasTank, showRoleNeedToggles)
-    SetControlVisible(boxHasHeal, showRoleNeedToggles)
-    SetControlVisible(boxParty, showRaidUtilityToggles or not showRaidBossRange)
-    SetControlVisible(boxLust, showRaidUtilityToggles or not showRaidBossRange)
-    SetControlVisible(boxBrez, showRaidUtilityToggles or not showRaidBossRange)
+    SetControlVisible(filterBoxes.needTank, showRoleNeedToggles)
+    SetControlVisible(filterBoxes.needHeal, showRoleNeedToggles)
+    SetControlVisible(filterBoxes.needDPS, showRoleNeedToggles)
+    SetControlVisible(filterBoxes.hasTank, showRoleNeedToggles)
+    SetControlVisible(filterBoxes.hasHeal, showRoleNeedToggles)
+    SetControlVisible(filterBoxes.party, showRaidUtilityToggles or not showRaidBossRange)
+    SetControlVisible(filterBoxes.lust, showRaidUtilityToggles or not showRaidBossRange)
+    SetControlVisible(filterBoxes.brez, showRaidUtilityToggles or not showRaidBossRange)
     SetControlVisible(filterPanel.matchMyRaidLockoutBox, showRaidUtilityToggles)
-    boxNeedTank:SetState(OAK_F.NeedTank)
-    boxHasTank:SetState(OAK_F.HasTank)
-    boxNeedHeal:SetState(OAK_F.NeedHeal)
-    boxHasHeal:SetState(OAK_F.HasHeal)
-    boxNeedDPS:SetState(OAK_F.NeedDPS)
-    boxParty:SetState(OAK_F.PartyFit)
-    boxLust:SetState(OAK_F.NeedLust)
-    boxBrez:SetState(OAK_F.NeedBrez)
+    filterBoxes.needTank:SetState(OAK_F.NeedTank)
+    filterBoxes.hasTank:SetState(OAK_F.HasTank)
+    filterBoxes.needHeal:SetState(OAK_F.NeedHeal)
+    filterBoxes.hasHeal:SetState(OAK_F.HasHeal)
+    filterBoxes.needDPS:SetState(OAK_F.NeedDPS)
+    filterBoxes.party:SetState(OAK_F.PartyFit)
+    filterBoxes.lust:SetState(OAK_F.NeedLust)
+    filterBoxes.brez:SetState(OAK_F.NeedBrez)
     filterPanel.matchMyRaidLockoutBox:SetState(OAK_F.MatchMyRaidLockout)
     SetControlVisible(divTexture, showActivityFilters)
     SetControlVisible(filterActivityTitle, showActivityFilters)
@@ -3413,12 +3404,12 @@ UpdateSearchFilterPane = function()
     end
 
     if showRaidBossRange then
-        boxParty:ClearAllPoints()
-        boxParty:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 16, baseY - 14)
-        boxLust:ClearAllPoints()
-        boxLust:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 16, baseY - 36)
-        boxBrez:ClearAllPoints()
-        boxBrez:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 104, baseY - 36)
+        filterBoxes.party:ClearAllPoints()
+        filterBoxes.party:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 16, baseY - 14)
+        filterBoxes.lust:ClearAllPoints()
+        filterBoxes.lust:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 16, baseY - 36)
+        filterBoxes.brez:ClearAllPoints()
+        filterBoxes.brez:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 104, baseY - 36)
         filterPanel.matchMyRaidLockoutBox:ClearAllPoints()
         filterPanel.matchMyRaidLockoutBox:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 16, baseY - 58)
 
@@ -3767,8 +3758,12 @@ ApplySearchNotesLayout = function(preserveLeftEdge)
 
     local layout = GetSearchLayout()
     for _, row in ipairs(rows) do
+        row.dungeonText:ClearAllPoints()
+        row.dungeonText:SetPoint("LEFT", row, "LEFT", 5, 0)
         row.dungeonText:SetWidth(layout.dungeonWidth)
-        row.playstyleText:SetWidth(layout.dungeonWidth)
+        row.playstyleText:ClearAllPoints()
+        row.playstyleText:SetPoint("LEFT", row, "LEFT", layout.playstyleX - SEARCH_ROW_X_OFFSET, 0)
+        row.playstyleText:SetWidth(layout.playstyleWidth)
         UpdateSearchRegionDisplay(row, layout)
 
         for index, square in ipairs(row.roleSquares) do
@@ -4079,26 +4074,26 @@ local function CreateRow(index)
     end)
 
     row.dungeonText = row:CreateFontString(nil, "OVERLAY", "OakLFG_FontRegular")
-    row.dungeonText:SetPoint("TOPLEFT", row, "TOPLEFT", 5, 0)
-    row.dungeonText:SetWidth(SEARCH_LAYOUT_EXPANDED.dungeonWidth); row.dungeonText:SetHeight(30); row.dungeonText:SetJustifyH("LEFT"); row.dungeonText:SetJustifyV("MIDDLE"); row.dungeonText:SetWordWrap(true)
+    row.dungeonText:SetPoint("LEFT", row, "LEFT", 5, 0)
+    row.dungeonText:SetWidth(SEARCH_LAYOUTS.expanded.dungeonWidth); row.dungeonText:SetHeight(ROW_HEIGHT); row.dungeonText:SetJustifyH("LEFT"); row.dungeonText:SetJustifyV("MIDDLE"); row.dungeonText:SetWordWrap(false)
     row.regionText = row:CreateFontString(nil, "OVERLAY", "OakLFG_FontSmall")
     row.regionText:SetText("")
     row.regionText:SetJustifyH("RIGHT")
     row.regionText:Hide()
-    
-    row.playstyleText = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    row.playstyleText:SetPoint("BOTTOMLEFT", row, "BOTTOMLEFT", 5, 4)
-    row.playstyleText:SetWidth(SEARCH_LAYOUT_EXPANDED.dungeonWidth); row.playstyleText:SetJustifyH("LEFT"); row.playstyleText:SetWordWrap(false)
+
+    row.playstyleText = row:CreateFontString(nil, "OVERLAY", "OakLFG_FontRegular")
+    row.playstyleText:SetPoint("LEFT", row, "LEFT", SEARCH_LAYOUTS.expanded.playstyleX - SEARCH_ROW_X_OFFSET, 0)
+    row.playstyleText:SetWidth(SEARCH_LAYOUTS.expanded.playstyleWidth); row.playstyleText:SetJustifyH("LEFT"); row.playstyleText:SetWordWrap(false)
     
     row.roleSquares = {}
-    local startX = GetSearchRoleStartX(SEARCH_LAYOUT_EXPANDED) - SEARCH_ROW_X_OFFSET
+    local startX = GetSearchRoleStartX(SEARCH_LAYOUTS.expanded) - SEARCH_ROW_X_OFFSET
     for i = 1, 5 do
         local sq = CreateRoleSquare(row, SEARCH_ROLE_SQUARE_SIZE)
         if i == 1 then sq:SetPoint("LEFT", row, "LEFT", startX, 0)
         else sq:SetPoint("LEFT", row.roleSquares[i-1], "RIGHT", SEARCH_ROLE_SQUARE_SPACING, 0) end
         row.roleSquares[i] = sq
     end
-    local summaryX1, summaryX2, summaryX3 = GetSearchRoleSummaryX(SEARCH_LAYOUT_EXPANDED)
+    local summaryX1, summaryX2, summaryX3 = GetSearchRoleSummaryX(SEARCH_LAYOUTS.expanded)
     row.roleSummaries = {
         CreateRoleSummary(row, "TANK", summaryX1 - SEARCH_ROW_X_OFFSET),
         CreateRoleSummary(row, "HEALER", summaryX2 - SEARCH_ROW_X_OFFSET),
@@ -4106,22 +4101,22 @@ local function CreateRow(index)
     }
 
     row.titleText = row:CreateFontString(nil, "OVERLAY", "OakLFG_FontRegular")
-    row.titleText:SetPoint("LEFT", row, "LEFT", SEARCH_LAYOUT_EXPANDED.titleX - SEARCH_ROW_X_OFFSET, 0); row.titleText:SetWidth(SEARCH_LAYOUT_EXPANDED.titleWidth); row.titleText:SetJustifyH("LEFT")
+    row.titleText:SetPoint("LEFT", row, "LEFT", SEARCH_LAYOUTS.expanded.titleX - SEARCH_ROW_X_OFFSET, 0); row.titleText:SetWidth(SEARCH_LAYOUTS.expanded.titleWidth); row.titleText:SetJustifyH("LEFT")
 
     row.modeText = row:CreateFontString(nil, "OVERLAY", "OakLFG_FontRegular")
-    row.modeText:SetPoint("CENTER", row, "LEFT", SEARCH_LAYOUT_EXPANDED_RAID.modeX + (SEARCH_LAYOUT_EXPANDED_RAID.modeWidth / 2) - SEARCH_ROW_X_OFFSET, 0)
-    row.modeText:SetWidth(SEARCH_LAYOUT_EXPANDED_RAID.modeWidth)
+    row.modeText:SetPoint("CENTER", row, "LEFT", SEARCH_LAYOUTS.expanded_raid.modeX + (SEARCH_LAYOUTS.expanded_raid.modeWidth / 2) - SEARCH_ROW_X_OFFSET, 0)
+    row.modeText:SetWidth(SEARCH_LAYOUTS.expanded_raid.modeWidth)
     row.modeText:SetJustifyH("CENTER")
     row.modeText:Hide()
 
     row.ratingText = row:CreateFontString(nil, "OVERLAY", "OakLFG_FontRegular")
-    row.ratingText:SetPoint("CENTER", row, "LEFT", SEARCH_LAYOUT_EXPANDED.ratingX + (SEARCH_LAYOUT_EXPANDED.ratingWidth / 2) - SEARCH_ROW_X_OFFSET, 0); row.ratingText:SetWidth(SEARCH_LAYOUT_EXPANDED.ratingWidth); row.ratingText:SetJustifyH("CENTER")
+    row.ratingText:SetPoint("CENTER", row, "LEFT", SEARCH_LAYOUTS.expanded.ratingX + (SEARCH_LAYOUTS.expanded.ratingWidth / 2) - SEARCH_ROW_X_OFFSET, 0); row.ratingText:SetWidth(SEARCH_LAYOUTS.expanded.ratingWidth); row.ratingText:SetJustifyH("CENTER")
 
     row.ageText = row:CreateFontString(nil, "OVERLAY", "OakLFG_FontRegular")
-    row.ageText:SetPoint("CENTER", row, "LEFT", SEARCH_LAYOUT_EXPANDED.ageX + (SEARCH_LAYOUT_EXPANDED.ageWidth / 2) - SEARCH_ROW_X_OFFSET, 0); row.ageText:SetWidth(SEARCH_LAYOUT_EXPANDED.ageWidth); row.ageText:SetJustifyH("CENTER")
+    row.ageText:SetPoint("CENTER", row, "LEFT", SEARCH_LAYOUTS.expanded.ageX + (SEARCH_LAYOUTS.expanded.ageWidth / 2) - SEARCH_ROW_X_OFFSET, 0); row.ageText:SetWidth(SEARCH_LAYOUTS.expanded.ageWidth); row.ageText:SetJustifyH("CENTER")
 
     row.notesText = row:CreateFontString(nil, "OVERLAY", "OakLFG_FontRegular")
-    row.notesText:SetPoint("LEFT", row, "LEFT", SEARCH_LAYOUT_EXPANDED.notesX - SEARCH_ROW_X_OFFSET, 0)
+    row.notesText:SetPoint("LEFT", row, "LEFT", SEARCH_LAYOUTS.expanded.notesX - SEARCH_ROW_X_OFFSET, 0)
     row.notesText:SetPoint("RIGHT", row, "RIGHT", -SEARCH_NOTES_RIGHT_MARGIN, 0)
     row.notesText:SetJustifyH("LEFT")
     row.notesText:SetWordWrap(false)
@@ -4172,7 +4167,7 @@ local function CreateRow(index)
     end)
 
     row.notesText:ClearAllPoints()
-    row.notesText:SetPoint("LEFT", row, "LEFT", SEARCH_LAYOUT_EXPANDED.notesX - SEARCH_ROW_X_OFFSET, 0)
+    row.notesText:SetPoint("LEFT", row, "LEFT", SEARCH_LAYOUTS.expanded.notesX - SEARCH_ROW_X_OFFSET, 0)
     row.notesText:SetPoint("RIGHT", row.applyBtn, "LEFT", -6, 0)
 
     return row
