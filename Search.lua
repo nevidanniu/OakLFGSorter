@@ -385,13 +385,28 @@ local filterActivityTitle
 local keyRangeLabel
 local keyRangeHint
 local keyQueryBox
-local filterBoxes = {}
+local boxNeedTank
+local boxHasTank
+local boxNeedHeal
+local boxHasHeal
+local boxNeedDPS
+local boxParty
+local boxLust
+local boxBrez
 local divTexture
 local filterDungeonContainer
 local nativeDungeonFilterScroll
 local nativeDungeonFilterContent
 local nativeDungeonActivityButtons = {}
-local nativeFilterBoxes = {}
+local nativeNeedsTankBox
+local nativeNeedsHealBox
+local nativeNeedsDpsBox
+local nativeNeedsMyClassBox
+local nativeHasTankBox
+local nativeHasHealBox
+local nativePartyBox
+local nativeLustBox
+local nativeBrezBox
 local nativeMinimumRatingLabel
 local nativeMinimumRatingBox
 local nativeActivityLabel
@@ -1031,29 +1046,29 @@ local startY = -148
 local col1X = 16
 local col2X = 110
 
-filterBoxes.needTank = CreateOakToggleBox(filterPanel, L["Need Tank"], "NeedTank", true)
-filterBoxes.needTank:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY)
+boxNeedTank = CreateOakToggleBox(filterPanel, L["Need Tank"], "NeedTank", true)
+boxNeedTank:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY)
 
-filterBoxes.hasTank = CreateOakToggleBox(filterPanel, L["Has Tank"], "HasTank", false)
-filterBoxes.hasTank:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY)
+boxHasTank = CreateOakToggleBox(filterPanel, L["Has Tank"], "HasTank", false)
+boxHasTank:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY)
 
-filterBoxes.needHeal = CreateOakToggleBox(filterPanel, L["Need Heals"], "NeedHeal", true)
-filterBoxes.needHeal:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 22)
+boxNeedHeal = CreateOakToggleBox(filterPanel, L["Need Heals"], "NeedHeal", true)
+boxNeedHeal:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 22)
 
-filterBoxes.hasHeal = CreateOakToggleBox(filterPanel, L["Has Heals"], "HasHeal", false)
-filterBoxes.hasHeal:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY - 22)
+boxHasHeal = CreateOakToggleBox(filterPanel, L["Has Heals"], "HasHeal", false)
+boxHasHeal:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY - 22)
 
-filterBoxes.needDPS = CreateOakToggleBox(filterPanel, L["Need DPS"], "NeedDPS", true)
-filterBoxes.needDPS:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 44)
+boxNeedDPS = CreateOakToggleBox(filterPanel, L["Need DPS"], "NeedDPS", true)
+boxNeedDPS:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 44)
 
-filterBoxes.party = CreateOakToggleBox(filterPanel, L["Party Fit"], "PartyFit", false)
-filterBoxes.party:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY - 44)
+boxParty = CreateOakToggleBox(filterPanel, L["Party Fit"], "PartyFit", false)
+boxParty:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY - 44)
 
-filterBoxes.lust = CreateOakToggleBox(filterPanel, L["Need Lust"], "NeedLust", false)
-filterBoxes.lust:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 66)
+boxLust = CreateOakToggleBox(filterPanel, L["Need Lust"], "NeedLust", false)
+boxLust:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 66)
 
-filterBoxes.brez = CreateOakToggleBox(filterPanel, L["Need BRez"], "NeedBrez", false)
-filterBoxes.brez:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY - 66)
+boxBrez = CreateOakToggleBox(filterPanel, L["Need BRez"], "NeedBrez", false)
+boxBrez:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col2X, startY - 66)
 
 filterPanel.matchMyRaidLockoutBox = CreateOakToggleBox(filterPanel, L["Match My Lockout"], "MatchMyRaidLockout", false)
 filterPanel.matchMyRaidLockoutBox:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", col1X, startY - 88)
@@ -3325,14 +3340,14 @@ UpdateSearchFilterPane = function()
         addonTable.SearchQueryButton:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 15, searchButtonTopY)
         addonTable.SearchResetButton:SetPoint("TOPLEFT", addonTable.SearchQueryButton, "TOPRIGHT", 7, 0)
         addonTable.SearchResetButton:Show()
-        SetControlVisible(filterBoxes.needTank, false)
-        SetControlVisible(filterBoxes.needHeal, false)
-        SetControlVisible(filterBoxes.needDPS, false)
-        SetControlVisible(filterBoxes.hasTank, false)
-        SetControlVisible(filterBoxes.hasHeal, false)
-        SetControlVisible(filterBoxes.party, false)
-        SetControlVisible(filterBoxes.lust, false)
-        SetControlVisible(filterBoxes.brez, false)
+        SetControlVisible(boxNeedTank, false)
+        SetControlVisible(boxNeedHeal, false)
+        SetControlVisible(boxNeedDPS, false)
+        SetControlVisible(boxHasTank, false)
+        SetControlVisible(boxHasHeal, false)
+        SetControlVisible(boxParty, false)
+        SetControlVisible(boxLust, false)
+        SetControlVisible(boxBrez, false)
         SetControlVisible(filterPanel.matchMyRaidLockoutBox, false)
         SetControlVisible(divTexture, false)
         SetControlVisible(filterActivityTitle, false)
@@ -3371,23 +3386,23 @@ UpdateSearchFilterPane = function()
     addonTable.SearchQueryButton:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 15, searchButtonTopY)
     addonTable.SearchResetButton:Hide()
 
-    SetControlVisible(filterBoxes.needTank, showRoleNeedToggles)
-    SetControlVisible(filterBoxes.needHeal, showRoleNeedToggles)
-    SetControlVisible(filterBoxes.needDPS, showRoleNeedToggles)
-    SetControlVisible(filterBoxes.hasTank, showRoleNeedToggles)
-    SetControlVisible(filterBoxes.hasHeal, showRoleNeedToggles)
-    SetControlVisible(filterBoxes.party, showRaidUtilityToggles or not showRaidBossRange)
-    SetControlVisible(filterBoxes.lust, showRaidUtilityToggles or not showRaidBossRange)
-    SetControlVisible(filterBoxes.brez, showRaidUtilityToggles or not showRaidBossRange)
+    SetControlVisible(boxNeedTank, showRoleNeedToggles)
+    SetControlVisible(boxNeedHeal, showRoleNeedToggles)
+    SetControlVisible(boxNeedDPS, showRoleNeedToggles)
+    SetControlVisible(boxHasTank, showRoleNeedToggles)
+    SetControlVisible(boxHasHeal, showRoleNeedToggles)
+    SetControlVisible(boxParty, showRaidUtilityToggles or not showRaidBossRange)
+    SetControlVisible(boxLust, showRaidUtilityToggles or not showRaidBossRange)
+    SetControlVisible(boxBrez, showRaidUtilityToggles or not showRaidBossRange)
     SetControlVisible(filterPanel.matchMyRaidLockoutBox, showRaidUtilityToggles)
-    filterBoxes.needTank:SetState(OAK_F.NeedTank)
-    filterBoxes.hasTank:SetState(OAK_F.HasTank)
-    filterBoxes.needHeal:SetState(OAK_F.NeedHeal)
-    filterBoxes.hasHeal:SetState(OAK_F.HasHeal)
-    filterBoxes.needDPS:SetState(OAK_F.NeedDPS)
-    filterBoxes.party:SetState(OAK_F.PartyFit)
-    filterBoxes.lust:SetState(OAK_F.NeedLust)
-    filterBoxes.brez:SetState(OAK_F.NeedBrez)
+    boxNeedTank:SetState(OAK_F.NeedTank)
+    boxHasTank:SetState(OAK_F.HasTank)
+    boxNeedHeal:SetState(OAK_F.NeedHeal)
+    boxHasHeal:SetState(OAK_F.HasHeal)
+    boxNeedDPS:SetState(OAK_F.NeedDPS)
+    boxParty:SetState(OAK_F.PartyFit)
+    boxLust:SetState(OAK_F.NeedLust)
+    boxBrez:SetState(OAK_F.NeedBrez)
     filterPanel.matchMyRaidLockoutBox:SetState(OAK_F.MatchMyRaidLockout)
     SetControlVisible(divTexture, showActivityFilters)
     SetControlVisible(filterActivityTitle, showActivityFilters)
@@ -3404,12 +3419,12 @@ UpdateSearchFilterPane = function()
     end
 
     if showRaidBossRange then
-        filterBoxes.party:ClearAllPoints()
-        filterBoxes.party:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 16, baseY - 14)
-        filterBoxes.lust:ClearAllPoints()
-        filterBoxes.lust:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 16, baseY - 36)
-        filterBoxes.brez:ClearAllPoints()
-        filterBoxes.brez:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 104, baseY - 36)
+        boxParty:ClearAllPoints()
+        boxParty:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 16, baseY - 14)
+        boxLust:ClearAllPoints()
+        boxLust:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 16, baseY - 36)
+        boxBrez:ClearAllPoints()
+        boxBrez:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 104, baseY - 36)
         filterPanel.matchMyRaidLockoutBox:ClearAllPoints()
         filterPanel.matchMyRaidLockoutBox:SetPoint("TOPLEFT", filterPanel, "TOPLEFT", 16, baseY - 58)
 
