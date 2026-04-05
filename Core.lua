@@ -416,6 +416,7 @@ local function GetSearchResultDifficultyToken(resultInfo, activityInfo)
         return "MYTHIC_PLUS"
     end
 
+
     local source = strlower(table.concat({
         tostring(resultInfo and resultInfo.name or ""),
         tostring(activityInfo and activityInfo.fullName or ""),
@@ -424,11 +425,11 @@ local function GetSearchResultDifficultyToken(resultInfo, activityInfo)
 
     if source:find("mythic%+", 1) or source:find("mythic keystone", 1, true) then
         return "MYTHIC_PLUS"
-    elseif source:find("mythic", 1, true) then
+    elseif source:find("mythic", 1, true) or source:find("эпохальный", 1, true) then
         return "MYTHIC"
-    elseif source:find("heroic", 1, true) then
+    elseif source:find("heroic", 1, true) or source:find("героический", 1, true) then
         return "HEROIC"
-    elseif source:find("normal", 1, true) then
+    elseif source:find("normal", 1, true)or source:find("обычный", 1, true) then
         return "NORMAL"
     end
 
